@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmaHo-C IDE", "SmaHo-C IDE\SmaHo-C IDE.csproj", "{CE7A5B33-CE11-4A21-9346-F4FE69B37968}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmaHo-C Debugger", "SmaHo-C Debugger\SmaHo-C Debugger.csproj", "{D79C9207-17E8-481B-8ECF-49B232FC559B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CE7A5B33-CE11-4A21-9346-F4FE69B37968}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE7A5B33-CE11-4A21-9346-F4FE69B37968}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE7A5B33-CE11-4A21-9346-F4FE69B37968}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE7A5B33-CE11-4A21-9346-F4FE69B37968}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D79C9207-17E8-481B-8ECF-49B232FC559B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D79C9207-17E8-481B-8ECF-49B232FC559B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D79C9207-17E8-481B-8ECF-49B232FC559B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D79C9207-17E8-481B-8ECF-49B232FC559B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A6155226-7DA2-4AB8-B40E-C8DECEA7428B}
+	EndGlobalSection
+EndGlobal
