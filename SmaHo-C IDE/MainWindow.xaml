@@ -4,9 +4,103 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SmaHo_C_IDE"
+        xmlns:controls="clr-namespace:SmaHo_C_IDE.Views.Controls"
+        xmlns:models="clr-namespace:SmaHo_C_IDE.Models"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="SmaHo IDE" Height="800" Width="1200">
+    <DockPanel>
+        <!-- Menüleiste -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_Datei">
+                <MenuItem Header="Neues Projekt" InputGestureText="Strg+N" />
+                <MenuItem Header="Projekt öffnen" InputGestureText="Strg+O" />
+                <Separator/>
+                <MenuItem Header="Projekt speichern" InputGestureText="Strg+S" />
+                <MenuItem Header="Projekt speichern unter..." />
+                <Separator/>
+                <MenuItem Header="Drucken" />
+                <MenuItem Header="Exportieren (PDF)" />
+            </MenuItem>
 
-    </Grid>
+            <MenuItem Header="_Bearbeiten">
+                <MenuItem Header="Rückgängig" InputGestureText="Strg+Z" />
+                <MenuItem Header="Wiederholen" InputGestureText="Strg+Y" />
+                <Separator/>
+                <MenuItem Header="Arbeitsfläche/Seite hinzufügen" />
+            </MenuItem>
+
+            <MenuItem Header="_Werkzeuge">
+                <MenuItem Header="Schaltplan an Controller übertragen" />
+                <MenuItem Header="Schaltplan von Controller lesen" />
+                <Separator/>
+                <MenuItem Header="Debugfunktion einschalten" />
+            </MenuItem>
+
+            <MenuItem Header="_Hilfe">
+                <MenuItem Header="Dokumentation öffnen" />
+                <MenuItem Header="Über..." />
+            </MenuItem>
+        </Menu>
+
+
+        <!-- Linke Werkzeugleiste -->
+        <StackPanel DockPanel.Dock="Left"
+                    Width="32"
+                    Background="#f0f0f0"
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Left">
+
+            <!-- Mauszeiger / Auswahl -->
+            <Button ToolTip="Auswahl (Maus)"
+                    Width="32" Height="32"
+                    Margin="2" Padding="0">
+                <TextBlock FontSize="20" Text="🖱️" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Button>
+
+            <!-- Standardgatter mit Kontextmenü -->
+            <Button ToolTip="Standard-Gatter hinzufügen"
+                    Width="32" Height="32"
+                    Margin="2" Padding="0"
+                    ContextMenuService.IsEnabled="True"
+                     Click="StandardGatterButton_Click">
+                <Button.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="AND" Click="AddGate" Tag="{x:Static models:GateType.And}"/>
+                        <MenuItem Header="NAND" Click="AddGate" Tag="{x:Static models:GateType.Nand}" />
+                        <MenuItem Header="OR" Click="AddGate" Tag="{x:Static models:GateType.Or}"/>
+                        <MenuItem Header="NOR" Click="AddGate" Tag="{x:Static models:GateType.Nor}"/>
+                        <MenuItem Header="XOR" Click="AddGate" Tag="{x:Static models:GateType.Xor}"/>
+                        <MenuItem Header="NOT" Click="AddGate" Tag="{x:Static models:GateType.Not}"/>
+                    </ContextMenu>
+                </Button.ContextMenu>
+                <TextBlock FontSize="20" Text="🔲" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Button>
+
+            <!-- Trenner -->
+            <Separator Margin="8"/>
+
+            <!-- Weiteres Beispiel-Tool -->
+            <Button ToolTip="Verbindungslinie hinzufügen"
+                    Width="32" Height="32"
+                    Margin="4" Padding="4">
+                <TextBlock FontSize="20" Text="🔌" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Button>
+
+        </StackPanel>
+
+        <!-- Hauptbereich: Zeichenfläche -->
+        <Grid>
+            <TabControl x:Name="PagesTabControl" Margin="8">
+                <TabItem Header="Seite 1">
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                        <Canvas x:Name="Canvas_Seite1" Background="#FFEFEFEF" Width="1600" Height="1130">
+                            <!-- Zeichenelemente kommen hier rein -->
+                        </Canvas>
+                    </ScrollViewer>
+                </TabItem>
+                <TabItem Header="+" />
+                <!-- Weitere Seiten/Tabs dynamisch hinzufügen -->
+            </TabControl>
+        </Grid>
+    </DockPanel>
 </Window>
