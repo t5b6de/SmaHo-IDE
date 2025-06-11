@@ -21,8 +21,8 @@ namespace SmaHo_C_IDE.Views.Controls
     /// </summary>
     public partial class LogicOrGateControl : LogicGateBaseControl
     {
-        public LogicOrGateControl(EditState state)
-            : base(4, 1, state)
+        public LogicOrGateControl()
+            : base(4, 1)
         {
             InitializeComponent();
 

@@ -1,4 +1,5 @@
-﻿using SmaHo_C_IDE.Models;
+﻿using SmaHo_C_IDE.Application;
+using SmaHo_C_IDE.Models;
 using SmaHo_C_IDE.Views.Controls;
 using System.Text;
 using System.Windows;
@@ -18,6 +19,9 @@ namespace SmaHo_C_IDE
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        private SchematicEditor _Editor;
+
         private void StandardGatterButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
@@ -32,19 +36,20 @@ namespace SmaHo_C_IDE
         public MainWindow()
         {
             InitializeComponent();
+            _Editor = new SchematicEditor(PagesTabControl);
         }
-
-
 
         private void AddGate(object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem menuItem && menuItem.Tag is GateType gateType)
             {
-                switch (gateType)
-                {
-
-                }
+                _Editor.AddGateMode(gateType);
             }
+        }
+
+        private void ModeDragDrop(object sender, RoutedEventArgs e)
+        {
+            _Editor.SetDragDrop();
         }
     }
 }

@@ -15,15 +15,15 @@ namespace SmaHo_C_IDE.Views.Controls
 {
     public class LogicGateBaseControl : UserControl
     {
-
-        public Point DragStartPoint { get; private set; }
         public bool IsDragging { get; private set; }
 
         protected Point[] _InputAnchors, _OutputAnchors;
 
-        private EditState _EditState { get; set; }
+        private Point _DragOffset;
 
-        public LogicGateBaseControl(int inCount, int outCount, EditState state)
+        public EditState? EditState { get; set; }
+
+        public LogicGateBaseControl(int inCount, int outCount)
         {
             this.Loaded += LogicGateBase_Loaded;
             this.MouseLeftButtonDown += OnMouseDown;
@@ -31,7 +31,6 @@ namespace SmaHo_C_IDE.Views.Controls
             this.MouseLeftButtonUp += OnMouseUp;
             _InputAnchors = new Point[inCount];
             _OutputAnchors = new Point[outCount];
-            _EditState = state;
         }
 
         protected void AddAnchorFromLine(Line line, int index, bool isInput)
@@ -43,7 +42,7 @@ namespace SmaHo_C_IDE.Views.Controls
             {
                 x = line.X2;
                 y = line.Y2;
-            }            
+            }
 
             Point[] dst = isInput ? _InputAnchors : _OutputAnchors;
             dst[index] = new Point(x, y);
@@ -56,14 +55,18 @@ namespace SmaHo_C_IDE.Views.Controls
 
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
-            DragStartPoint = e.GetPosition(null);
+            if (EditState == null || !EditState.IsActivated)
+                return;
+
             IsDragging = true;
+            _DragOffset = e.GetPosition(this);
+
             this.CaptureMouse();
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
-            if (!_EditState.IsActivated)
+            if (EditState == null || !EditState.IsActivated)
                 return;
 
             if (IsDragging)
@@ -72,14 +75,19 @@ namespace SmaHo_C_IDE.Views.Controls
                 if (parent == null) return;
 
                 var position = e.GetPosition(parent);
-                Canvas.SetLeft(this, position.X - this.ActualWidth / 2);
-                Canvas.SetTop(this, position.Y - this.ActualHeight / 2);
+
+                Canvas.SetLeft(this, position.X - _DragOffset.X);
+                Canvas.SetTop(this, position.Y - _DragOffset.Y);
+
+                /*Canvas.SetLeft(this, position.X - this.ActualWidth / 2);
+                Canvas.SetTop(this, position.Y - this.ActualHeight / 2);*/
+
             }
         }
 
         private void OnMouseUp(object sender, MouseButtonEventArgs e)
         {
-            //if (!EditState.IsActivated)
+            //if (_EditState == null || !EditState.IsActivated)
             //    return;
 
             IsDragging = false;

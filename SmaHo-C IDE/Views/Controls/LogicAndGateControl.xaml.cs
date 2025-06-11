@@ -21,8 +21,8 @@ namespace SmaHo_C_IDE.Views.Controls
     /// </summary>
     public partial class LogicAndGateControl : LogicGateBaseControl
     {
-        public LogicAndGateControl(EditState state)
-            : base(4, 1, state) // Anzahl Ein/Ausgänge
+        public LogicAndGateControl()
+            : base(4, 1) // Anzahl Ein/Ausgänge
         {
             InitializeComponent();
 

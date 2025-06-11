@@ -32,12 +32,12 @@ namespace SmaHo_C_IDE.Helper
 
         private LogicGateBaseControl CreateView(GateType gt)
         {
-            switch (gt)
+            return gt switch
             {
-                
-                default:
-                    throw new NotImplementedException();
-            }
+                GateType.And => new LogicAndGateControl(),
+                GateType.Or => new LogicOrGateControl(),
+                _ => throw new NotImplementedException(),
+            };
         }
 
         private LogicGateBaseViewModel CreateModelViewModel(GateType gt)

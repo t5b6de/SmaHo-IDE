@@ -53,7 +53,8 @@
             <!-- Mauszeiger / Auswahl -->
             <Button ToolTip="Auswahl (Maus)"
                     Width="32" Height="32"
-                    Margin="2" Padding="0">
+                    Margin="2" Padding="0"
+                    Click="ModeDragDrop">
                 <TextBlock FontSize="20" Text="🖱️" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Button>
 
@@ -91,14 +92,6 @@
         <!-- Hauptbereich: Zeichenfläche -->
         <Grid>
             <TabControl x:Name="PagesTabControl" Margin="8">
-                <TabItem Header="Seite 1">
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                        <Canvas x:Name="Canvas_Seite1" Background="#FFEFEFEF" Width="1600" Height="1130">
-                            <!-- Zeichenelemente kommen hier rein -->
-                        </Canvas>
-                    </ScrollViewer>
-                </TabItem>
-                <TabItem Header="+" />
                 <!-- Weitere Seiten/Tabs dynamisch hinzufügen -->
             </TabControl>
         </Grid>

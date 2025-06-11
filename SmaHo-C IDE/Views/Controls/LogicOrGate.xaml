@@ -28,8 +28,8 @@
                    FontSize="14"
                    Canvas.Left="13" Canvas.Top="20" Width="54" FontWeight="Bold"
                    TextAlignment="Center" />
-        
-        <TextBlock Text="B{Binding Model.Id}"
+
+        <TextBlock Text="{Binding Model.Id, StringFormat='B{0}'}"
                    FontSize="10"
                    Canvas.Left="10" Canvas.Top="88"
                    TextAlignment="Left" Width="60" />
