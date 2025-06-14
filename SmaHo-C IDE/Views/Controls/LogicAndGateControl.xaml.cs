@@ -1,4 +1,5 @@
 ﻿using SmaHo_C_IDE.Helper;
+using SmaHo_C_IDE.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,19 +22,19 @@ namespace SmaHo_C_IDE.Views.Controls
     /// </summary>
     public partial class LogicAndGateControl : LogicGateBaseControl
     {
-        public LogicAndGateControl()
-            : base(4, 1) // Anzahl Ein/Ausgänge
+        public LogicAndGateControl(StandardGateViewModel vm)
+            : base(vm, 4, 1) // Anzahl Ein/Ausgänge
         {
             InitializeComponent();
 
             //Andockpunkte festlegen
-            AddAnchorFromLine(In1, 0, true);
-            AddAnchorFromLine(In2, 1, true);
-            AddAnchorFromLine(In3, 2, true);
-            AddAnchorFromLine(In4, 3, true);
-
+            vm.AddAnchorFromLine(In1, 0, true);
+            vm.AddAnchorFromLine(In2, 1, true);
+            vm.AddAnchorFromLine(In3, 2, true);
+            vm.AddAnchorFromLine(In4, 3, true);
+            
             //Ausgänge:
-            AddAnchorFromLine(Out1, 0, false);
+            vm.AddAnchorFromLine(Out1, 0, false);
         }
     }
 }

@@ -51,5 +51,10 @@ namespace SmaHo_C_IDE
         {
             _Editor.SetDragDrop();
         }
+
+        private void ModeConnect(object sender, RoutedEventArgs e)
+        {
+            _Editor.SetConnectMode();
+        }
     }
 }

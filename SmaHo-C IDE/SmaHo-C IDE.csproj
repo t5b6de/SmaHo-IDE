@@ -10,7 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Controls\Routing\" />
     <Folder Include="Views\Toolbar\" />
     <Folder Include="Views\Pages\" />
   </ItemGroup>

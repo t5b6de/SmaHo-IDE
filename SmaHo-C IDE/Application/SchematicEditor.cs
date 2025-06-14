@@ -6,16 +6,19 @@ using SmaHo_C_IDE.Views.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace SmaHo_C_IDE.Application
 {
 
-    // enthält die eigentliche Logik des Editors
+    // enthält die eigentliche Logik des Editors, Quasi Model des Editors.
     class SchematicEditor
     {
         GateFactory _GateFactory;
@@ -25,6 +28,8 @@ namespace SmaHo_C_IDE.Application
         List<EditorPage> _Pages;
 
         List<LogicGateBaseModel> _LogicGates;
+
+        List<GateConnectionModel> _GateConnections;
 
         TabControl _TabControl;
 
@@ -40,6 +45,7 @@ namespace SmaHo_C_IDE.Application
             _Pages = new List<EditorPage>();
 
             _LogicGates = new List<LogicGateBaseModel>();
+            _GateConnections = new List<GateConnectionModel>();
 
             _TabControl = tabControl;
             _CurrentMode = EditMode.None;
@@ -51,13 +57,30 @@ namespace SmaHo_C_IDE.Application
 
         public void AddGateMode(GateType gateType)
         {
-            _CurrentMode = EditMode.AddGate;
+            setMode(EditMode.AddGate);
             _CurrentNewGateType = gateType;
         }
 
         public void SetDragDrop()
         {
-            _CurrentMode = EditMode.Select;
+            setMode(EditMode.Select);
+        }
+
+        public void SetConnectMode()
+        {
+            setMode(EditMode.Connect);
+        }
+
+        public void SetDeleteMode()
+        {
+            setMode(EditMode.Remove);
+        }
+
+        private void setMode(EditMode mode)
+        {
+            _CurrentMode = mode;
+            if (_CurrentPage != null)
+                _CurrentPage.EditState.EditMode = mode;
         }
 
         private void AddNewPage()
@@ -78,11 +101,11 @@ namespace SmaHo_C_IDE.Application
 
             ti.Content = sv;
             sv.Content = c;
-            _CurrentPage = new EditorPage(c);
+            _CurrentPage = new EditorPage(_PageCounter++, c);
             _CurrentPage.Title = ti.Name;
-            _CurrentPage.Id = _PageCounter++;
             _CurrentPage.EditState.IsActivated = true;
-            _CurrentPage.MouseDown += EditorPageOnMouseDown;
+            _CurrentPage.GateRequested = GatePlaced;
+            _CurrentPage.ConnectionAdded += ConnectionAddedToPage;
 
             _Pages.Add(_CurrentPage);
 
@@ -99,35 +122,24 @@ namespace SmaHo_C_IDE.Application
             _TabControl.Items.Add(ti);
         }
 
-        private void EditorPageOnMouseDown(EditorPage page, MouseButtonEventArgs e)
+        private void ConnectionAddedToPage(GateConnectionModel obj)
         {
-            // dieses Event betrifft das Canvas, nicht das Gesamte EditorPage
-            Canvas c = page.Canvas;
+            _GateConnections.Add(obj);
+        }
 
-            var position = e.GetPosition(c);
+        private LogicGateBaseControl GatePlaced()
+        {
+            (LogicGateBaseModel m, LogicGateBaseControl ct) gate = _GateFactory.CreateGate(_CurrentNewGateType);
 
-            if (_CurrentMode == EditMode.AddGate)
-            {
-                (LogicGateBaseViewModel, LogicGateBaseControl) gate = _GateFactory.CreateGate(_CurrentNewGateType);
-
-                c.Children.Add(gate.Item2);
-                gate.Item2.EditState = page.EditState;
-                
-
-                Canvas.SetLeft(gate.Item2, position.X - (gate.Item2.Width / 2));
-                Canvas.SetTop(gate.Item2, position.Y - (gate.Item2.Height / 2));
-            }
-            else { }
-
-
-
+            _LogicGates.Add(gate.m);
+            return gate.ct;
         }
 
         private void PageTabSelectChanged(object sender, SelectionChangedEventArgs e)
         {
             TabControl s = (TabControl)sender;
 
-            if (s != null && s.SelectedIndex > 0 && s.SelectedIndex < s.Items.Count)
+            if (s != null && s.SelectedIndex >= 0 && s.SelectedIndex < s.Items.Count)
             {
                 TabItem? ti = s.Items[s.SelectedIndex] as TabItem;
 
@@ -146,6 +158,7 @@ namespace SmaHo_C_IDE.Application
                     {
                         _CurrentPage = _Pages[s.SelectedIndex];
                         _CurrentPage.EditState.IsActivated = true;
+                        _CurrentPage.EditState.EditMode = _CurrentMode;
                     }
                 }
             }

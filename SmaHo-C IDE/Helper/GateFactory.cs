@@ -19,23 +19,21 @@ namespace SmaHo_C_IDE.Helper
             _IdMgr = mgr;
         }
 
-        public (LogicGateBaseViewModel, LogicGateBaseControl) CreateGate(GateType gt)
+        public (LogicGateBaseModel, LogicGateBaseControl) CreateGate(GateType gt)
         {
             var vm = CreateModelViewModel(gt);
             var m = vm.Model;
-            var v = CreateView(gt);
+            var v = CreateView(gt, vm);
 
-            v.DataContext = vm;
-
-            return (vm, v);
+            return (m, v);
         }
 
-        private LogicGateBaseControl CreateView(GateType gt)
+        private LogicGateBaseControl CreateView(GateType gt, LogicGateBaseViewModel vm)
         {
             return gt switch
             {
-                GateType.And => new LogicAndGateControl(),
-                GateType.Or => new LogicOrGateControl(),
+                GateType.And => new LogicAndGateControl(vm as StandardGateViewModel),
+                GateType.Or => new LogicOrGateControl(vm as StandardGateViewModel),
                 _ => throw new NotImplementedException(),
             };
         }

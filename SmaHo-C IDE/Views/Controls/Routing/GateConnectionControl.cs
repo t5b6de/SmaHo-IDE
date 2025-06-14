@@ -4,14 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmaHo_C_IDE.Services
+namespace SmaHo_C_IDE.Views.Controls.Routing
 {
-    public enum EditMode
+    class GateConnectionControl
     {
-        None,
-        Select,
-        AddGate,
-        Connect,
-        Remove,
     }
 }

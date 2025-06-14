@@ -53,7 +53,7 @@
             <!-- Mauszeiger / Auswahl -->
             <Button ToolTip="Auswahl (Maus)"
                     Width="32" Height="32"
-                    Margin="2" Padding="0"
+                    Margin="0" Padding="0"
                     Click="ModeDragDrop">
                 <TextBlock FontSize="20" Text="🖱️" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Button>
@@ -61,7 +61,7 @@
             <!-- Standardgatter mit Kontextmenü -->
             <Button ToolTip="Standard-Gatter hinzufügen"
                     Width="32" Height="32"
-                    Margin="2" Padding="0"
+                    Margin="0" Padding="0"
                     ContextMenuService.IsEnabled="True"
                      Click="StandardGatterButton_Click">
                 <Button.ContextMenu>
@@ -74,7 +74,7 @@
                         <MenuItem Header="NOT" Click="AddGate" Tag="{x:Static models:GateType.Not}"/>
                     </ContextMenu>
                 </Button.ContextMenu>
-                <TextBlock FontSize="20" Text="🔲" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock FontSize="15" Text="🔲" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Button>
 
             <!-- Trenner -->
@@ -83,8 +83,17 @@
             <!-- Weiteres Beispiel-Tool -->
             <Button ToolTip="Verbindungslinie hinzufügen"
                     Width="32" Height="32"
-                    Margin="4" Padding="4">
+                    Margin="0" Padding="4"
+                    Click="ModeConnect">
                 <TextBlock FontSize="20" Text="🔌" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Button>
+
+            <!-- Weiteres Beispiel-Tool -->
+            <Button ToolTip="Element löschen"
+                    Width="32" Height="32"
+                    Margin="0" Padding="0"
+                    Click="ModeDelete">
+                <TextBlock FontSize="15" Text="🗑" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Button>
 
         </StackPanel>

@@ -1,0 +1,83 @@
+﻿Stehen geblieben bei:
+
+Löschen von Gates, durchreichen via events und obserable colletion, um die Daten konsistent zu halten.
+
+im EditorPage GateViewModelDeleted Event eingefügt, um das dann im Schematic Editor final zu bearbeiten (löschen der Models)
+In der Funktion muss noch das Löschen der Verbinder rein.
+Da drin müssen dann ebenfalls die events etc. entfernt werden, damit innen drin nichts mehr bearbeiten werden kann
+(Ansonsten Memory Leak)
+
+VOrschlag gpt:
+public void RemoveGate(GateViewModel gate)
+{
+    // Alle Verbindungen entfernen, die daran hängen
+    var toRemove = Connections
+        .Where(c => c.Source == gate || c.Target == gate)
+        .ToList();
+
+    foreach (var conn in toRemove)
+        Connections.Remove(conn);
+
+    Gates.Remove(gate);
+}
+
+Line-Element für Canvas, hierfür bereits datei erstellt, da muss noch auch für das Canvas ein Klick-Radius implementiert werden,
+
+Ansätze
+private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
+{
+    if (_EditState != EditState.DeleteConnection)
+        return;
+
+    Point clickPosition = e.GetPosition(MyCanvas);
+
+    const double maxDistance = 10.0;
+    GateConnectionControl nearest = null;
+    double nearestDistance = double.MaxValue;
+
+    foreach (var conn in _connections)
+    {
+        var dist = GetMinDistanceToLine(conn, clickPosition);
+        if (dist < maxDistance && dist < nearestDistance)
+        {
+            nearest = conn;
+            nearestDistance = dist;
+        }
+    }
+
+    if (nearest != null)
+    {
+        DeleteConnection(nearest);
+    }
+}
+
+
+private double GetMinDistanceToLine(GateConnectionControl conn, Point click)
+{
+    // Hole Start und Endpunkt der Verbindung
+    var x1 = conn.X1;
+    var y1 = conn.Y1;
+    var x2 = conn.X2;
+    var y2 = conn.Y2;
+
+    var a = new Point(x1, y1);
+    var b = new Point(x2, y2);
+
+    return DistancePointToSegment(click, a, b);
+}
+
+public static double DistancePointToSegment(Point p, Point a, Point b)
+{
+    double dx = b.X - a.X;
+    double dy = b.Y - a.Y;
+
+    if (dx == 0 && dy == 0)
+        return (p - a).Length; // A = B, Abstand zu einem Punkt
+
+    double t = ((p.X - a.X) * dx + (p.Y - a.Y) * dy) / (dx * dx + dy * dy);
+    t = Math.Max(0, Math.Min(1, t)); // Clamp t auf [0,1]
+
+    Point projection = new Point(a.X + t * dx, a.Y + t * dy);
+    return (p - projection).Length;
+}
+

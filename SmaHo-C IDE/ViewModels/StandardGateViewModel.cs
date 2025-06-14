@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmaHo_C_IDE.ViewModels
 {
-    class StandardGateViewModel : LogicGateBaseViewModel
+    public class StandardGateViewModel : LogicGateBaseViewModel
     {
         public StandardGateViewModel(StandardGateModel model)
             : base(model)
