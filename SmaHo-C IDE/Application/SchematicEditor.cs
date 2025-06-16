@@ -1,10 +1,13 @@
 ﻿using SmaHo_C_IDE.Helper;
 using SmaHo_C_IDE.Models;
+using SmaHo_C_IDE.Models.Routing;
 using SmaHo_C_IDE.Services;
 using SmaHo_C_IDE.ViewModels;
+using SmaHo_C_IDE.ViewModels.Routing;
 using SmaHo_C_IDE.Views.Controls;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -19,7 +22,7 @@ namespace SmaHo_C_IDE.Application
 {
 
     // enthält die eigentliche Logik des Editors, Quasi Model des Editors.
-    class SchematicEditor
+    public class SchematicEditor : INotifyPropertyChanged
     {
         GateFactory _GateFactory;
         IdManager _IdManager;
@@ -38,6 +41,20 @@ namespace SmaHo_C_IDE.Application
         EditMode _CurrentMode;
         GateType _CurrentNewGateType;
 
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public EditMode CurrentEditMode
+        {
+            get { return _CurrentMode; }
+            set
+            {
+                _CurrentMode = value;
+                if (_CurrentPage != null)
+                    _CurrentPage.EditState.EditMode = value;
+                PropertyChanged?.Invoke(this,new PropertyChangedEventArgs(nameof(CurrentEditMode)));
+            }
+        }
+
         public SchematicEditor(TabControl tabControl)
         {
             _IdManager = new IdManager();
@@ -55,32 +72,9 @@ namespace SmaHo_C_IDE.Application
             _TabControl.SelectionChanged += PageTabSelectChanged;
         }
 
-        public void AddGateMode(GateType gateType)
+        public void AddGateType(GateType gateType)
         {
-            setMode(EditMode.AddGate);
             _CurrentNewGateType = gateType;
-        }
-
-        public void SetDragDrop()
-        {
-            setMode(EditMode.Select);
-        }
-
-        public void SetConnectMode()
-        {
-            setMode(EditMode.Connect);
-        }
-
-        public void SetDeleteMode()
-        {
-            setMode(EditMode.Remove);
-        }
-
-        private void setMode(EditMode mode)
-        {
-            _CurrentMode = mode;
-            if (_CurrentPage != null)
-                _CurrentPage.EditState.EditMode = mode;
         }
 
         private void AddNewPage()
@@ -107,6 +101,9 @@ namespace SmaHo_C_IDE.Application
             _CurrentPage.GateRequested = GatePlaced;
             _CurrentPage.ConnectionAdded += ConnectionAddedToPage;
 
+            _CurrentPage.GateViewModelDeleted += GateViewModelDeleted;
+            _CurrentPage.GateConnectionViewModelDeleted += GateConnectionViewModelDeleted;
+
             _Pages.Add(_CurrentPage);
 
             if (_TabControl.Items.Count > 0)
@@ -122,9 +119,21 @@ namespace SmaHo_C_IDE.Application
             _TabControl.Items.Add(ti);
         }
 
+        private void GateConnectionViewModelDeleted(GateConnectionViewModel viewModel, GateConnectionModel model)
+        {
+            _GateConnections.Remove(model);
+        }
+
+        private void GateViewModelDeleted(LogicGateBaseViewModel viewModel, LogicGateBaseModel model)
+        {
+            _LogicGates.Remove(model);
+            _GateFactory.FreeId(model);
+        }
+
         private void ConnectionAddedToPage(GateConnectionModel obj)
         {
             _GateConnections.Add(obj);
+            // ggf. Todo, diese Liste entfernen, die Connections direkt in die Gate-Models pflegen.
         }
 
         private LogicGateBaseControl GatePlaced()

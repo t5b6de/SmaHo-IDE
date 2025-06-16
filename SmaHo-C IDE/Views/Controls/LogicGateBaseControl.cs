@@ -57,7 +57,7 @@ namespace SmaHo_C_IDE.Views.Controls
 
             if (EditState.EditMode == Services.EditMode.Remove)
             {
-                DeletionRequested?.Invoke(ViewModel);
+                DeletionRequested?.Invoke(this, ViewModel);
             }
         }
 

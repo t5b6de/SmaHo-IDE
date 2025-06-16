@@ -1,9 +1,11 @@
 ﻿using SmaHo_C_IDE.Application;
 using SmaHo_C_IDE.Models;
+using SmaHo_C_IDE.Services;
 using SmaHo_C_IDE.Views.Controls;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -24,11 +26,13 @@ namespace SmaHo_C_IDE
 
         private void StandardGatterButton_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
+            e.Handled = true;
+
+            var button = sender as ToggleButton;
             if (button?.ContextMenu != null)
             {
                 button.ContextMenu.PlacementTarget = button;
-                button.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+                //button.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.;
                 button.ContextMenu.IsOpen = true;
             }
         }
@@ -37,24 +41,17 @@ namespace SmaHo_C_IDE
         {
             InitializeComponent();
             _Editor = new SchematicEditor(PagesTabControl);
+            this.DataContext = _Editor;
         }
 
         private void AddGate(object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem menuItem && menuItem.Tag is GateType gateType)
             {
-                _Editor.AddGateMode(gateType);
+                _Editor.AddGateType(gateType);
+                _Editor.CurrentEditMode = EditMode.AddGate;
             }
         }
 
-        private void ModeDragDrop(object sender, RoutedEventArgs e)
-        {
-            _Editor.SetDragDrop();
-        }
-
-        private void ModeConnect(object sender, RoutedEventArgs e)
-        {
-            _Editor.SetConnectMode();
-        }
     }
 }

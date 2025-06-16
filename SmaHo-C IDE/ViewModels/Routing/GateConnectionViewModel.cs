@@ -1,5 +1,6 @@
 ﻿using SmaHo_C_IDE.Helper;
 using SmaHo_C_IDE.Models;
+using SmaHo_C_IDE.Models.Routing;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,9 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace SmaHo_C_IDE.ViewModels
+namespace SmaHo_C_IDE.ViewModels.Routing
 {
-    class GateConnectionViewModel : INotifyPropertyChanged
+    public class GateConnectionViewModel : INotifyPropertyChanged, IDisposable
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -94,6 +95,11 @@ namespace SmaHo_C_IDE.ViewModels
         private void FromGateChanged(object? sender, PropertyChangedEventArgs e)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Start)));
+        }
+        public void Dispose()
+        {
+            _fromGate.PropertyChanged -= FromGateChanged;
+            _toGate.PropertyChanged -= ToGateChanged;
         }
     }
 }

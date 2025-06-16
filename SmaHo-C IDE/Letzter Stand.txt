@@ -1,5 +1,6 @@
 ﻿Stehen geblieben bei:
 
+Teilweise erledigt:
 Löschen von Gates, durchreichen via events und obserable colletion, um die Daten konsistent zu halten.
 
 im EditorPage GateViewModelDeleted Event eingefügt, um das dann im Schematic Editor final zu bearbeiten (löschen der Models)

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmaHo_C_IDE.Models
+namespace SmaHo_C_IDE.Models.Routing
 {
-    class GateConnectionModel
+    public class GateConnectionModel
     {
         public int FromGateId { get; set; }
         public int FromOutputIndex { get; set; }

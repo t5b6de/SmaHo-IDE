@@ -1,8 +1,10 @@
 ﻿using SmaHo_C_IDE.EventHandler;
 using SmaHo_C_IDE.Helper;
 using SmaHo_C_IDE.Models;
+using SmaHo_C_IDE.Models.Routing;
 using SmaHo_C_IDE.Services;
 using SmaHo_C_IDE.ViewModels;
+using SmaHo_C_IDE.ViewModels.Routing;
 using SmaHo_C_IDE.Views.Controls;
 using System;
 using System.Collections.Generic;
@@ -39,9 +41,10 @@ namespace SmaHo_C_IDE.Application
 
         public event Action<GateConnectionModel>? ConnectionAdded;
         public event GateViewModelDeletedEventHandler GateViewModelDeleted;
+        public event GateConnectionViewModelDeletedEventHandler GateConnectionViewModelDeleted;
 
         private ObservableCollection<LogicGateBaseViewModel> _GateViewModels = new ObservableCollection<LogicGateBaseViewModel>();
-        private List<GateConnectionViewModel> _GateConnections = new List<GateConnectionViewModel>();
+        private ObservableCollection<GateConnectionViewModel> _GateConnections = new ObservableCollection<GateConnectionViewModel>();
 
         private Canvas _Canvas { get; }
 
@@ -65,10 +68,43 @@ namespace SmaHo_C_IDE.Application
             Description = "";
 
             _GateViewModels.CollectionChanged += GateViewModels_CollectionChanged;
+            _GateConnections.CollectionChanged += GateConnections_CollectionChanged;
 
             // _StartDragPosition = new Point(0, 0);
             _TemporaryLine.StrokeThickness = 1;
             _TemporaryLine.Stroke = new SolidColorBrush(Colors.Black);
+        }
+
+        private void GateConnections_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                if (e.OldItems == null) // prevent null warning
+                    return;
+
+                foreach (var item in e.OldItems)
+                {
+                    if (item is GateConnectionViewModel gcvm)
+                    {
+                        GateConnectionViewModelDeleted?.Invoke(gcvm, gcvm.Model);
+                        gcvm.Dispose();
+
+                        var toDelete = new List<UIElement>();
+
+                        // Verbinder in Zeichnung entfernen. TODO: Verbinder-Control bauen.
+                        foreach(var elem in _Canvas.Children)
+                        {
+                            if(elem is Line line && line.DataContext == gcvm)
+                            {
+                                toDelete.Add(line);
+                            }
+                        }
+
+                        foreach (var elem in toDelete)
+                            _Canvas.Children.Remove(elem);  
+                    }
+                }
+            }
         }
 
         private void GateViewModels_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -83,6 +119,15 @@ namespace SmaHo_C_IDE.Application
                     if(item is LogicGateBaseViewModel lgbvm)
                     {
                         GateViewModelDeleted?.Invoke(lgbvm, lgbvm.Model);
+                        lgbvm.Dispose();
+
+                        // Hier nach Verbindungen suchen und entfernen
+                        var toRemove = _GateConnections
+                            .Where(c => c.FromViewModel == lgbvm || c.ToViewModel == lgbvm)
+                            .ToList();
+
+                        foreach (var conn in toRemove)
+                            _GateConnections.Remove(conn);
                     }
                 }
             }
@@ -168,7 +213,8 @@ namespace SmaHo_C_IDE.Application
             Line connLine = new Line
             {
                 Stroke = Brushes.Black,
-                StrokeThickness = 2
+                StrokeThickness = 2,
+                DataContext = cvm
             };
 
             // Binding für X1

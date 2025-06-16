@@ -4,10 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SmaHo_C_IDE"
-        xmlns:controls="clr-namespace:SmaHo_C_IDE.Views.Controls"
+        xmlns:helper="clr-namespace:SmaHo_C_IDE.Helper"
+        xmlns:icons="clr-namespace:SmaHo_C_IDE.Views.Controls.Icons"
         xmlns:models="clr-namespace:SmaHo_C_IDE.Models"
+        xmlns:modes="clr-namespace:SmaHo_C_IDE.Services"
         mc:Ignorable="d"
         Title="SmaHo IDE" Height="800" Width="1200">
+    <Window.Resources>
+        <helper:EnumToBoolConverter x:Key="EnumToBoolConverter"/>
+    </Window.Resources>
     <DockPanel>
         <!-- Menüleiste -->
         <Menu DockPanel.Dock="Top">
@@ -45,26 +50,27 @@
 
         <!-- Linke Werkzeugleiste -->
         <StackPanel DockPanel.Dock="Left"
-                    Width="32"
+                    Width="34"
                     Background="#f0f0f0"
                     VerticalAlignment="Stretch"
                     HorizontalAlignment="Left">
 
-            <!-- Mauszeiger / Auswahl -->
-            <Button ToolTip="Auswahl (Maus)"
-                    Width="32" Height="32"
-                    Margin="0" Padding="0"
-                    Click="ModeDragDrop">
-                <TextBlock FontSize="20" Text="🖱️" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Button>
-
-            <!-- Standardgatter mit Kontextmenü -->
-            <Button ToolTip="Standard-Gatter hinzufügen"
-                    Width="32" Height="32"
-                    Margin="0" Padding="0"
-                    ContextMenuService.IsEnabled="True"
-                     Click="StandardGatterButton_Click">
-                <Button.ContextMenu>
+            <ToggleButton
+                    Width="32" Height="32" Margin="1"
+                IsChecked="{Binding CurrentEditMode, 
+                Converter={StaticResource EnumToBoolConverter}, 
+                ConverterParameter={x:Static modes:EditMode.Select}}">
+                <TextBlock FontSize="15" Text="🖱️" HorizontalAlignment="Center" VerticalAlignment="Center"                           />
+            </ToggleButton>
+            <ToggleButton
+                    Width="32" Height="32" Margin="1" Padding="1"
+                IsChecked="{Binding CurrentEditMode, 
+                Converter={StaticResource EnumToBoolConverter}, 
+                ConverterParameter={x:Static modes:EditMode.AddGate}}"
+                                    ContextMenuService.IsEnabled="True"
+                     PreviewMouseLeftButtonDown="StandardGatterButton_Click" 
+                >
+                <ToggleButton.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="AND" Click="AddGate" Tag="{x:Static models:GateType.And}"/>
                         <MenuItem Header="NAND" Click="AddGate" Tag="{x:Static models:GateType.Nand}" />
@@ -73,29 +79,29 @@
                         <MenuItem Header="XOR" Click="AddGate" Tag="{x:Static models:GateType.Xor}"/>
                         <MenuItem Header="NOT" Click="AddGate" Tag="{x:Static models:GateType.Not}"/>
                     </ContextMenu>
-                </Button.ContextMenu>
-                <TextBlock FontSize="15" Text="🔲" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Button>
-
+                </ToggleButton.ContextMenu>
+                <Viewbox Stretch="Uniform">
+                    <icons:AddGateIcon Width="105" Height="105"/>
+                </Viewbox>
+            </ToggleButton>
+            <ToggleButton
+                    Width="32" Height="32" Margin="1" Padding="1"
+                IsChecked="{Binding CurrentEditMode, 
+                Converter={StaticResource EnumToBoolConverter}, 
+                ConverterParameter={x:Static modes:EditMode.Connect}}">
+                <Viewbox Stretch="Uniform">
+                    <icons:ConnectGateIcon Width="105" Height="105"/>
+                </Viewbox>
+            </ToggleButton>
             <!-- Trenner -->
-            <Separator Margin="8"/>
-
-            <!-- Weiteres Beispiel-Tool -->
-            <Button ToolTip="Verbindungslinie hinzufügen"
-                    Width="32" Height="32"
-                    Margin="0" Padding="4"
-                    Click="ModeConnect">
-                <TextBlock FontSize="20" Text="🔌" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Button>
-
-            <!-- Weiteres Beispiel-Tool -->
-            <Button ToolTip="Element löschen"
-                    Width="32" Height="32"
-                    Margin="0" Padding="0"
-                    Click="ModeDelete">
-                <TextBlock FontSize="15" Text="🗑" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Button>
-
+            <Separator Margin="2"/>
+            <ToggleButton
+                    Width="32" Height="32" Margin="1"
+                IsChecked="{Binding CurrentEditMode, 
+                Converter={StaticResource EnumToBoolConverter}, 
+                ConverterParameter={x:Static modes:EditMode.Remove}}">
+                <TextBlock FontSize="15" Text="X" HorizontalAlignment="Center" VerticalAlignment="Center"                           />
+            </ToggleButton>
         </StackPanel>
 
         <!-- Hauptbereich: Zeichenfläche -->

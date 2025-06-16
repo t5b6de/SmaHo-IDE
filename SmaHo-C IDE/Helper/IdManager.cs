@@ -117,5 +117,67 @@ namespace SmaHo_C_IDE.Helper
                 return id;
             }
         }
+
+        public bool FreeId(int id, GateType type)
+        {
+            bool[] dst;
+
+            switch (type)
+            {
+                case GateType.DIn:
+                    dst = _DOut;
+                    break;
+
+                case GateType.DOut:
+                    dst = _DIn;
+                    break;
+
+                case GateType.VIn:
+                    dst = _VIn;
+                    break;
+
+                case GateType.VOut:
+                    dst = _VOut;
+                    break;
+
+                case GateType.And:
+                case GateType.Or:
+                case GateType.Xor:
+                case GateType.Not:
+                case GateType.Nand:
+                case GateType.Nor:
+                case GateType.RSFlipFlop:
+                case GateType.TFlipFlop:
+                    dst = _DefaultGateIDs;
+                    break;
+
+                case GateType.Mds:
+                    dst = _MdsGateIds;
+                    break;
+
+                case GateType.DelayOn:
+                case GateType.DelayOff:
+                case GateType.DelayOnOff:
+                case GateType.DelayStoreOn:
+                case GateType.DelayPulse:
+                case GateType.DelayTriggerPulse:
+                case GateType.DelayStairLight:
+                    dst = _DelayGateIDs;
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+            if (id >= dst.Length)
+                return false;
+
+            if (dst[id] == false)
+                return false;
+
+            dst[id] = false;
+
+            return true;
+        }
     }
 }

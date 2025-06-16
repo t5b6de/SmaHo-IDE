@@ -10,7 +10,7 @@ using System.Windows.Shapes;
 
 namespace SmaHo_C_IDE.ViewModels
 {
-    public abstract class LogicGateBaseViewModel : INotifyPropertyChanged
+    public abstract class LogicGateBaseViewModel : INotifyPropertyChanged, IDisposable
     {
         public LogicGateBaseModel Model { get; }
 
@@ -42,11 +42,13 @@ namespace SmaHo_C_IDE.ViewModels
             _OutputAnchors = [];
             CurrentPosition = new Point();
         }
+
         public void InitializePoints(int inCount, int outCount)
         {
             _InputAnchors = new Point[inCount];
             _OutputAnchors = new Point[outCount];
         }
+
         public void AddAnchorFromLine(Line line, int index, bool isInput)
         {
             var x = line.X1;
@@ -60,6 +62,11 @@ namespace SmaHo_C_IDE.ViewModels
 
             Point[] dst = isInput ? _InputAnchors : _OutputAnchors;
             dst[index] = new Point(x, y);
+        }
+
+        public void Dispose()
+        {
+            
         }
     }
 }

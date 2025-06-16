@@ -8,6 +8,7 @@ namespace SmaHo_C_IDE.Models
 {
     public enum GateType
     {
+        None,
         // EA
         DIn,
         DOut,

@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="SmaHo_C_IDE.Views.Controls.Icons.AddGateIcon"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SmaHo_C_IDE.Views.Controls.Icons"
+             mc:Ignorable="d" 
+             d:DesignHeight="105" d:DesignWidth="105">
+    <Canvas>
+        <!-- Rechteck-Gatterkörper -->
+        <Rectangle Width="60" Height="90"
+                Fill="#FFFFE6A0"
+                Stroke="Black" StrokeThickness="4"
+                RadiusX="4" RadiusY="4"
+                Canvas.Left="24" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Top="3" />
+
+        <!-- Eingänge -->
+        <Line Name="In1" X1="0" Y1="15" X2="10" Y2="15" Stroke="Black" StrokeThickness="4" HorizontalAlignment="Left" Canvas.Left="14" VerticalAlignment="Center" Canvas.Top="3"/>
+        <Line Name="In2" X1="0" Y1="35" X2="10" Y2="35" Stroke="Black" StrokeThickness="4" HorizontalAlignment="Left" Canvas.Left="14" VerticalAlignment="Center" Canvas.Top="3"/>
+        <Line Name="In3" X1="0" Y1="55" X2="10" Y2="55" Stroke="Black" StrokeThickness="4" HorizontalAlignment="Left" Canvas.Left="14" VerticalAlignment="Center" Canvas.Top="3"/>
+        <Line Name="In4" X1="0" Y1="75" X2="10" Y2="75" Stroke="Black" StrokeThickness="4" HorizontalAlignment="Left" Canvas.Left="14" VerticalAlignment="Center" Canvas.Top="3"/>
+
+        <!-- Ausgang  -->
+        <Line Name="Out1" X1="70" Y1="35" X2="80" Y2="35" Stroke="Black" StrokeThickness="4" HorizontalAlignment="Left" Canvas.Left="14" VerticalAlignment="Center" Canvas.Top="3"/>
+
+        <!-- Symbol -->
+        <TextBlock Text="+"
+                FontSize="50"
+                Canvas.Left="27" Canvas.Top="6"
+                TextAlignment="Center" Width="54" HorizontalAlignment="Left" VerticalAlignment="Center" Height="85" />
+        
+        <TextBlock Text="X123"
+                FontSize="15"
+                Canvas.Left="24" Canvas.Top="87"
+                TextAlignment="Left" Width="60" HorizontalAlignment="Left" VerticalAlignment="Center" />
+    </Canvas>
+</UserControl>

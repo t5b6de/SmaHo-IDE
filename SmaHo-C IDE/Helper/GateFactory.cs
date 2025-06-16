@@ -85,5 +85,10 @@ namespace SmaHo_C_IDE.Helper
             }
         }
 
+        public void FreeId(LogicGateBaseModel gate)
+        {
+            if (!_IdMgr.FreeId(gate.Id, gate.GateType))
+                throw new InvalidOperationException("double free or invalid id/type combination");
+        }
     }
 }
