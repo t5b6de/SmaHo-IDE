@@ -72,6 +72,8 @@
                 >
                 <ToggleButton.ContextMenu>
                     <ContextMenu>
+                        <MenuItem Header="Input" Click="AddGate" Tag="{x:Static models:GateType.DIn}"/>
+                        <MenuItem Header="Output" Click="AddGate" Tag="{x:Static models:GateType.DOut}"/>
                         <MenuItem Header="AND" Click="AddGate" Tag="{x:Static models:GateType.And}"/>
                         <MenuItem Header="NAND" Click="AddGate" Tag="{x:Static models:GateType.Nand}" />
                         <MenuItem Header="OR" Click="AddGate" Tag="{x:Static models:GateType.Or}"/>

@@ -24,4 +24,6 @@ namespace SmaHo_C_IDE.EventHandler
 
     public delegate void GateConnectionViewModelDeletedEventHandler(GateConnectionViewModel viewModel, GateConnectionModel model);
 
+    public delegate void GateConnectionAddedEventHandler(GateConnectionModel model);
+
 }

@@ -12,5 +12,7 @@ namespace SmaHo_C_IDE.Helper
         public required LogicGateBaseViewModel ViewModel { get; set; }
         public int Index { get; set; }
         public bool IsOutput {  get; set; }
+
+        public bool IsConnectionLine { get; set; }
     }
 }

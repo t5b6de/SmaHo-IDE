@@ -34,6 +34,8 @@ namespace SmaHo_C_IDE.Helper
             {
                 GateType.And => new LogicAndGateControl(vm as StandardGateViewModel),
                 GateType.Or => new LogicOrGateControl(vm as StandardGateViewModel),
+                GateType.DIn => new DigitalInputGateControl(vm as  DigitalInputGateViewModel),
+                GateType.DOut => new DigitalOutputGateControl(vm as DigitalOutputGateViewModel),
                 _ => throw new NotImplementedException(),
             };
         }

@@ -8,6 +8,10 @@ In der Funktion muss noch das Löschen der Verbinder rein.
 Da drin müssen dann ebenfalls die events etc. entfernt werden, damit innen drin nichts mehr bearbeiten werden kann
 (Ansonsten Memory Leak)
 
+
+Idee für Multi Polyline-Verbinder: siehe Zeile 104 (vor AddConnectionToNet) Controls/Routing/MultiPolyLineConnector.cs 
+
+
 VOrschlag gpt:
 public void RemoveGate(GateViewModel gate)
 {

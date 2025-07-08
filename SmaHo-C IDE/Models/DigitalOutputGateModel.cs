@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmaHo_C_IDE.Models
 {
-    class DigitalOutputGateModel : LogicGateBaseModel
+    public class DigitalOutputGateModel : LogicGateBaseModel
     {
         public DigitalOutputGateModel(int id)
             : base(id, GateType.DOut)

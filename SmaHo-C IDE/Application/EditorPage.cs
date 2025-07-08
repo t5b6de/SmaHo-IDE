@@ -6,6 +6,7 @@ using SmaHo_C_IDE.Services;
 using SmaHo_C_IDE.ViewModels;
 using SmaHo_C_IDE.ViewModels.Routing;
 using SmaHo_C_IDE.Views.Controls;
+using SmaHo_C_IDE.Views.Controls.Routing;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -33,18 +34,17 @@ namespace SmaHo_C_IDE.Application
         public string Description { get; set; }
 
         private const double cAnchorHitRadius = 8.0;
-        private const int cMaxOutputUsage = 15;
 
         public EditState EditState { get; }
 
         public Func<LogicGateBaseControl>? GateRequested;
 
-        public event Action<GateConnectionModel>? ConnectionAdded;
+        public event GateConnectionAddedEventHandler ConnectionAdded;
         public event GateViewModelDeletedEventHandler GateViewModelDeleted;
         public event GateConnectionViewModelDeletedEventHandler GateConnectionViewModelDeleted;
 
-        private ObservableCollection<LogicGateBaseViewModel> _GateViewModels = new ObservableCollection<LogicGateBaseViewModel>();
-        private ObservableCollection<GateConnectionViewModel> _GateConnections = new ObservableCollection<GateConnectionViewModel>();
+        private ObservableCollection<LogicGateBaseViewModel> _GateViewModels = [];
+        private ObservableCollection<MultiPolylineConnector> _GateConnections = [];
 
         private Canvas _Canvas { get; }
 
@@ -68,44 +68,13 @@ namespace SmaHo_C_IDE.Application
             Description = "";
 
             _GateViewModels.CollectionChanged += GateViewModels_CollectionChanged;
-            _GateConnections.CollectionChanged += GateConnections_CollectionChanged;
+            //_GateConnections.CollectionChanged += GateConnections_CollectionChanged;          
 
             // _StartDragPosition = new Point(0, 0);
             _TemporaryLine.StrokeThickness = 1;
             _TemporaryLine.Stroke = new SolidColorBrush(Colors.Black);
         }
 
-        private void GateConnections_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == NotifyCollectionChangedAction.Remove)
-            {
-                if (e.OldItems == null) // prevent null warning
-                    return;
-
-                foreach (var item in e.OldItems)
-                {
-                    if (item is GateConnectionViewModel gcvm)
-                    {
-                        GateConnectionViewModelDeleted?.Invoke(gcvm, gcvm.Model);
-                        gcvm.Dispose();
-
-                        var toDelete = new List<UIElement>();
-
-                        // Verbinder in Zeichnung entfernen. TODO: Verbinder-Control bauen.
-                        foreach(var elem in _Canvas.Children)
-                        {
-                            if(elem is Line line && line.DataContext == gcvm)
-                            {
-                                toDelete.Add(line);
-                            }
-                        }
-
-                        foreach (var elem in toDelete)
-                            _Canvas.Children.Remove(elem);  
-                    }
-                }
-            }
-        }
 
         private void GateViewModels_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
@@ -114,20 +83,33 @@ namespace SmaHo_C_IDE.Application
                 if (e.OldItems == null) // prevent null warning
                     return;
 
-                foreach(var item in e.OldItems)
+                foreach (var item in e.OldItems)
                 {
-                    if(item is LogicGateBaseViewModel lgbvm)
+                    if (item is LogicGateBaseViewModel lgbvm)
                     {
                         GateViewModelDeleted?.Invoke(lgbvm, lgbvm.Model);
                         lgbvm.Dispose();
 
-                        // Hier nach Verbindungen suchen und entfernen
+                        // Hier nach Verbindungen suchen und entfernen, TODO: Contains prüfen! ob die Logik hier so passt, unsicher.
                         var toRemove = _GateConnections
-                            .Where(c => c.FromViewModel == lgbvm || c.ToViewModel == lgbvm)
+                            .Where(c => c.FromViewModel == lgbvm || c.ToViewModels.Contains(lgbvm))
                             .ToList();
 
                         foreach (var conn in toRemove)
-                            _GateConnections.Remove(conn);
+                        {
+                            List<GateConnectionViewModel> tmp = new List<GateConnectionViewModel>();
+                            var fully = conn.RemovePartial(lgbvm, tmp);
+                            if(fully)
+                            {
+                                _GateConnections.Remove(conn);
+                            }
+
+                            foreach(var i in tmp)
+                            {
+                                GateConnectionViewModelDeleted(i, i.Model);
+                                i.Dispose();
+                            }
+                        }                            
                     }
                 }
             }
@@ -174,81 +156,23 @@ namespace SmaHo_C_IDE.Application
 
         private void AddConnectionToPage(PreConnectedEndpoint fromEp, PreConnectedEndpoint toEp)
         {
-            // Prüfung: 
-            if (fromEp.IsOutput == toEp.IsOutput) // dann Eingang <-> Eingang oder Ausgang <-> Ausgang -> nicht zulässig.
-                return;
+            var newConn = new MultiPolylineConnector(_Canvas);
+            
+            // Einfach durchreichen:
+            newConn.ConnectionAdded += ProxyConnectionAdded;
 
-            if (fromEp.ViewModel == toEp.ViewModel) // direkte Rückkopplung (stand jetzt) möglich aber unerwünscht.
-                return;
+            // TODO hier durchiterieren zwecks hinzufügen.
 
-            int outCount = 0;
-
-            // grundsätzliche Prüfung, 1 Eingang darf nicht mit mehr als 1 Ausgang verbunden sein:
-            foreach (GateConnectionViewModel gcvm in _GateConnections)
+            if(newConn.AddConnectionToNet(fromEp, toEp))
             {
-                if (gcvm.Identical(toEp)) // Multibelegung Eingang - damit wird exakte Konfiguration ebenfalls unterbunden
-                    return;
-
-                // zählen wie oft Ausgang bereits verwendet, ist begrenzt:
-                if(gcvm.Identical(fromEp))
-                {
-                    outCount++;
-
-                    if (outCount >= cMaxOutputUsage)
-                        return;
-                }
+                _GateConnections.Add(newConn);
             }
 
-            // Dnn sollte (vorerst) alles so passen, nun die Models und Darstellung erzeugen.
-            GateConnectionModel gcm = new GateConnectionModel();
+        }
 
-            gcm.FromGateId = fromEp.ViewModel.Model.Id;
-            gcm.FromOutputIndex = fromEp.Index;
-            gcm.ToGateId = toEp.ViewModel.Model.Id;
-            gcm.ToInputIndex = toEp.Index;
-
-            GateConnectionViewModel cvm = new GateConnectionViewModel(gcm, fromEp.ViewModel, toEp.ViewModel);
-
-            // Hier nun Linie erzeugen:
-            Line connLine = new Line
-            {
-                Stroke = Brushes.Black,
-                StrokeThickness = 2,
-                DataContext = cvm
-            };
-
-            // Binding für X1
-            connLine.SetBinding(Line.X1Property, new Binding("Start.X")
-            {
-                Source = cvm,
-                Mode = BindingMode.OneWay
-            });
-
-            // Binding für Y1
-            connLine.SetBinding(Line.Y1Property, new Binding("Start.Y")
-            {
-                Source = cvm,
-                Mode = BindingMode.OneWay
-            });
-
-            // Binding für X2
-            connLine.SetBinding(Line.X2Property, new Binding("End.X")
-            {
-                Source = cvm,
-                Mode = BindingMode.OneWay
-            });
-
-            // Binding für Y2
-            connLine.SetBinding(Line.Y2Property, new Binding("End.Y")
-            {
-                Source = cvm,
-                Mode = BindingMode.OneWay
-            });
-
-            _Canvas.Children.Add(connLine);
-
-            _GateConnections.Add(cvm);
-            ConnectionAdded?.Invoke(gcm);
+        private void ProxyConnectionAdded(GateConnectionModel model)
+        {
+            ConnectionAdded?.Invoke(model);
         }
 
         private void CanvasOnMouseMove(object sender, MouseEventArgs e)
@@ -322,6 +246,9 @@ namespace SmaHo_C_IDE.Application
 
         private PreConnectedEndpoint? GetNearestAnchor(Point pos)
         {
+            // TODO: get Nearest Connection!
+            // Dann PreConnectedEntpoint auf IsConnectinLine=true setzen.
+
             foreach (var gate in _GateViewModels)
             {
                 var gatePos = gate.CurrentPosition;
@@ -333,7 +260,7 @@ namespace SmaHo_C_IDE.Application
 
                     if (IsNear(pos, ancPos, cAnchorHitRadius))
                     {
-                        return new PreConnectedEndpoint { ViewModel = gate, Index = i, IsOutput = false };
+                        return new PreConnectedEndpoint { ViewModel = gate, Index = i, IsOutput = false, IsConnectionLine = false };
                     }
                 }
 
@@ -344,7 +271,7 @@ namespace SmaHo_C_IDE.Application
 
                     if (IsNear(pos, ancPos, cAnchorHitRadius))
                     {
-                        return new PreConnectedEndpoint { ViewModel = gate, Index = i, IsOutput = true };
+                        return new PreConnectedEndpoint { ViewModel = gate, Index = i, IsOutput = true, IsConnectionLine = false };
                     }
                 }
             }

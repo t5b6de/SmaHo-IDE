@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmaHo_C_IDE.ViewModels
 {
-    class DigitalOutputGateViewModel : LogicGateBaseViewModel
+    public class DigitalOutputGateViewModel : LogicGateBaseViewModel
     {
         public DigitalOutputGateViewModel(DigitalOutputGateModel model)
             : base(model)
