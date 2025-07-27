@@ -247,7 +247,7 @@ namespace SmaHo_C_IDE.Application
         private PreConnectedEndpoint? GetNearestAnchor(Point pos)
         {
             // TODO: get Nearest Connection!
-            // Dann PreConnectedEntpoint auf IsConnectinLine=true setzen.
+            // Dann PreConnectedEntpoint auf IsConnectinLine=true setzen und die PolyLine da drinnen setzen.
 
             foreach (var gate in _GateViewModels)
             {

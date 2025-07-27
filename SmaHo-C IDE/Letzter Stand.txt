@@ -1,34 +1,10 @@
 ﻿Stehen geblieben bei:
+Multi Polyline verbinder, in editorpage bei getnearestanchor muss auch die iteration durch die Connections erfolgen, damit dann im PolylineConnector
+die Verbindung zu weiteren Gattern funktioniert.
+Prüfungen hierzu bereits implementiert.
+Zudem siehe Zeile 104 (vor AddConnectionToNet) Controls/Routing/MultiPolyLineConnector.cs 
 
-Teilweise erledigt:
-Löschen von Gates, durchreichen via events und obserable colletion, um die Daten konsistent zu halten.
-
-im EditorPage GateViewModelDeleted Event eingefügt, um das dann im Schematic Editor final zu bearbeiten (löschen der Models)
-In der Funktion muss noch das Löschen der Verbinder rein.
-Da drin müssen dann ebenfalls die events etc. entfernt werden, damit innen drin nichts mehr bearbeiten werden kann
-(Ansonsten Memory Leak)
-
-
-Idee für Multi Polyline-Verbinder: siehe Zeile 104 (vor AddConnectionToNet) Controls/Routing/MultiPolyLineConnector.cs 
-
-
-VOrschlag gpt:
-public void RemoveGate(GateViewModel gate)
-{
-    // Alle Verbindungen entfernen, die daran hängen
-    var toRemove = Connections
-        .Where(c => c.Source == gate || c.Target == gate)
-        .ToList();
-
-    foreach (var conn in toRemove)
-        Connections.Remove(conn);
-
-    Gates.Remove(gate);
-}
-
-Line-Element für Canvas, hierfür bereits datei erstellt, da muss noch auch für das Canvas ein Klick-Radius implementiert werden,
-
-Ansätze
+Ansätze (aus gpt, prüfen!)
 private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
 {
     if (_EditState != EditState.DeleteConnection)

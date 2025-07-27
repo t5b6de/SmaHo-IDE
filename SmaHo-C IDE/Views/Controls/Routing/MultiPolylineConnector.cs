@@ -112,10 +112,21 @@ namespace SmaHo_C_IDE.Views.Controls.Routing
             // einem Ausgang verbunden werden (evtl. rot einfärben), sonst ist das Zeichnen nicht sehr Intuitiv
 
             // Prüfung: 
-            if (fromEp.IsOutput == toEp.IsOutput) // dann Eingang <-> Eingang oder Ausgang <-> Ausgang -> nicht zulässig.
+            if (fromEp.IsOutput && toEp.IsOutput) // zwei Ausgänge dürfen nicht miteinander verbunden werden
                 return false;
 
-            if (fromEp.ViewModel == toEp.ViewModel) // direkte Rückkopplung (stand jetzt) möglich aber unerwünscht.
+            if(fromEp.IsConnectionLine && toEp.IsConnectionLine) // keine zwei ConnectionLines zusammen
+                return false;
+
+            // wenn einer der EPs ein Connectionline ist, dann darf es nur diese sein.
+            if (fromEp.IsConnectionLine && fromEp.ConnectionLine != null && fromEp.ConnectionLine != this)
+                return false;
+         
+            if (toEp.IsConnectionLine && toEp.ConnectionLine != null && toEp.ConnectionLine != this)
+                return false;
+
+            // direkte Rückkopplung (stand jetzt) möglich aber unerwünscht.
+            if (fromEp.ViewModel == toEp.ViewModel) 
                 return false;
 
             int outCount = 0;
@@ -135,6 +146,11 @@ namespace SmaHo_C_IDE.Views.Controls.Routing
                         return false;
                 }
             }
+
+            // wenn 2 netze (multipolyline) miteinander verbunden werden, müssen diese zu einem netz zusammengefasst werden.
+            // das Darf natürlich nur dann gehen, wenn nur ein Ausgang verbunden ist. Alternativ komplett blockieren,
+            // sodass netze nur mit ein/ausgängen verbunden werden können.
+
 
             // Dnn sollte (vorerst) alles so passen, nun die Models und Darstellung erzeugen.
             GateConnectionModel gcm = new GateConnectionModel();
