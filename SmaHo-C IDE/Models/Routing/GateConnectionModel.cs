@@ -9,9 +9,9 @@ namespace SmaHo_C_IDE.Models.Routing
     public class GateConnectionModel
     {
         public int FromGateId { get; set; }
-        public int FromOutputIndex { get; set; }
+        public int FromIndex { get; set; }
 
         public int ToGateId { get; set; }
-        public int ToInputIndex { get; set; }
+        public int ToIndex { get; set; }
     }
 }

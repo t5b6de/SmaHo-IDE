@@ -32,8 +32,23 @@ namespace SmaHo_C_IDE.ViewModels
             }
         }
 
-        public Point[] InputAnchors { get { return _InputAnchors; } }
-        public Point[] OutputAnchors { get { return _OutputAnchors; } }
+        //public Point[] InputAnchors { get { return _InputAnchors; } }
+        //public Point[] OutputAnchors { get { return _OutputAnchors; } }
+
+        // TODO: ggf. gemeinsames Array mit allen Anchors und nur über Index mit Anzahl ein/ausgänge mappen.
+        public Point[] Anchors
+        {
+            get
+            {
+                if (_InputAnchors.Length == 0)
+                    return _OutputAnchors;
+
+                if(_OutputAnchors.Length == 0)
+                    return _InputAnchors;
+
+                return _InputAnchors.Concat(_OutputAnchors).ToArray();
+            }
+        }
 
         public LogicGateBaseViewModel(LogicGateBaseModel model)
         {
@@ -64,9 +79,31 @@ namespace SmaHo_C_IDE.ViewModels
             dst[index] = new Point(x, y);
         }
 
+        /// <summary>
+        /// Gibt den "genaueren" Anchor vom "globalen" index zurück
+        /// Der Zurückgegebene wert ist der Index des Anchors im jeweiligen Array, Input oder Output
+        /// </summary>
+        /// <param name="i">golbaler anchor index</param>
+        /// <returns>Tupel mit index und typ (true bei Eingang, false bei Ausgang)</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public (int index, bool isInput) GetSpecificAnchorFromIndex(int i)
+        {
+            if (i < 0 || (i - _InputAnchors.Length) > _OutputAnchors.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(i));
+            }
+
+            if (i >= _InputAnchors.Length)
+            {
+                return (i - _InputAnchors.Length, false);
+            }
+
+            return (i, true);
+        }
+
         public void Dispose()
         {
-            
+
         }
     }
 }

@@ -101,7 +101,7 @@ namespace SmaHo_C_IDE.Views.Controls.Routing
             return _GateConnections.Count == 0;
         }
 
-        // TOOD Idee:
+        // TOOD:
         // Beim Verbinden weiterer Gates mit bestehender Verbindung:
         // Verbindung nicht neu erstellen, sondern dieser hinzufügen, um unnötige Verbindungen zu vermeiden.
         // Am Verbindungspunkt dann die Linie auftrennen und einen Verbindungs-Dot setzen.
@@ -110,6 +110,10 @@ namespace SmaHo_C_IDE.Views.Controls.Routing
         {
             // TODO: Zwischenstände zulassen, wie 2 Verbundene Eingänge, die dann durch eine weitere Linie mit
             // einem Ausgang verbunden werden (evtl. rot einfärben), sonst ist das Zeichnen nicht sehr Intuitiv
+
+            // TODO: es müssen bestehende Netze miteinander verbunden werden.
+            // Aktuell ist es möglich zwei Ausgänge über einen gemeinsamen Eingang zu verbinden.
+            // an einem "Netz" darf nur ein Ausgang angeschlossen sein, sonst "Kurzschluss"
 
             // Prüfung: 
             if (fromEp.IsOutput && toEp.IsOutput) // zwei Ausgänge dürfen nicht miteinander verbunden werden
@@ -147,18 +151,20 @@ namespace SmaHo_C_IDE.Views.Controls.Routing
                 }
             }
 
+            // TODO:
             // wenn 2 netze (multipolyline) miteinander verbunden werden, müssen diese zu einem netz zusammengefasst werden.
             // das Darf natürlich nur dann gehen, wenn nur ein Ausgang verbunden ist. Alternativ komplett blockieren,
             // sodass netze nur mit ein/ausgängen verbunden werden können.
+            // Wie oben: ein Netz darf immer nur ein Ausgang an sich verbunden haben.
 
 
-            // Dnn sollte (vorerst) alles so passen, nun die Models und Darstellung erzeugen.
+            // Prüfung ende. Dann sollte (vorerst) alles so passen, nun die Models und Darstellung erzeugen.
             GateConnectionModel gcm = new GateConnectionModel();
 
             gcm.FromGateId = fromEp.ViewModel.Model.Id;
-            gcm.FromOutputIndex = fromEp.Index;
+            gcm.FromIndex = fromEp.Index;
             gcm.ToGateId = toEp.ViewModel.Model.Id;
-            gcm.ToInputIndex = toEp.Index;
+            gcm.ToIndex = toEp.Index;
 
             GateConnectionViewModel cvm = new GateConnectionViewModel(gcm, fromEp.ViewModel, toEp.ViewModel);
 

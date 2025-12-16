@@ -142,14 +142,6 @@ namespace SmaHo_C_IDE.Application
 
                 anc2 = tmp;
 
-                // korrekt durchtauschen, das anc1 immer der output ist, prüfung ob falsch in AddConnectino funktion.
-                if (!anc1.IsOutput)
-                {
-                    tmp = anc2;
-                    anc2 = anc1;
-                    anc1 = tmp;
-                }
-
                 AddConnectionToPage(anc1, anc2);
             }
         }
@@ -249,31 +241,29 @@ namespace SmaHo_C_IDE.Application
             // TODO: get Nearest Connection!
             // Dann PreConnectedEntpoint auf IsConnectinLine=true setzen und die PolyLine da drinnen setzen.
 
+            foreach( var conn in _GateConnections)
+            {
+
+            }
+
             foreach (var gate in _GateViewModels)
             {
                 var gatePos = gate.CurrentPosition;
 
-                // inputs
-                for (int i = 0; i < gate.InputAnchors.Count(); i++)
+                // alle durchgehen und "globalen" index der anchors am gate holen:
+                var gateAnchors = gate.Anchors;
+                for(int i = 0; i < gateAnchors.Count(); i++)
                 {
-                    var ancPos = gatePos + (Vector)gate.InputAnchors[i];
+                    var ancPos = gatePos + (Vector)gateAnchors[i];
 
                     if (IsNear(pos, ancPos, cAnchorHitRadius))
                     {
-                        return new PreConnectedEndpoint { ViewModel = gate, Index = i, IsOutput = false, IsConnectionLine = false };
+                        var t = gate.GetSpecificAnchorFromIndex(i);
+
+                        return new PreConnectedEndpoint { ViewModel = gate, Index = i, IsOutput = !t.isInput, IsConnectionLine = false };
                     }
                 }
 
-                // outputs
-                for (int i = 0; i < gate.OutputAnchors.Count(); i++)
-                {
-                    var ancPos = gatePos + (Vector)gate.OutputAnchors[i];
-
-                    if (IsNear(pos, ancPos, cAnchorHitRadius))
-                    {
-                        return new PreConnectedEndpoint { ViewModel = gate, Index = i, IsOutput = true, IsConnectionLine = false };
-                    }
-                }
             }
 
             return null;

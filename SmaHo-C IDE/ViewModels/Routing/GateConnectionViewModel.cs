@@ -46,7 +46,7 @@ namespace SmaHo_C_IDE.ViewModels.Routing
         {
             get
             {
-                return _fromGate.CurrentPosition + (Vector)_fromGate.OutputAnchors[Model.FromOutputIndex];
+                return _fromGate.CurrentPosition + (Vector)_fromGate.Anchors[Model.FromIndex];
             }
         }
 
@@ -57,7 +57,7 @@ namespace SmaHo_C_IDE.ViewModels.Routing
         {
             get
             {
-                return _toGate.CurrentPosition + (Vector)_toGate.InputAnchors[Model.ToInputIndex];
+                return _toGate.CurrentPosition + (Vector)_toGate.Anchors[Model.ToIndex];
             }
         }
 
@@ -98,12 +98,12 @@ namespace SmaHo_C_IDE.ViewModels.Routing
 
         public bool Identical(PreConnectedEndpoint source)
         {
-            if (source.IsOutput)
+            if (source.IsOutput) // TODO: CHeck ob das so noch korrekt ist, da nun anchors mit globalem index existieren.
             {
                 if (_fromGate != source.ViewModel)
                     return false;
 
-                if (Model.FromOutputIndex != source.Index)
+                if (Model.FromIndex != source.Index)
                     return false;
             }
             else
@@ -111,7 +111,7 @@ namespace SmaHo_C_IDE.ViewModels.Routing
                 if (_toGate != source.ViewModel)
                     return false;
 
-                if (Model.ToInputIndex != source.Index)
+                if (Model.ToIndex != source.Index)
                     return false;
             }
  
